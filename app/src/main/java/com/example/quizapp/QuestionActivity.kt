@@ -1,5 +1,6 @@
 package com.example.quizapp
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -15,6 +16,7 @@ class QuestionActivity : AppCompatActivity() {
     private lateinit var question : QuestionLists
     private lateinit var currentQuestion : Question
     var questionsAnswered = 0
+    var correctAnswers = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,8 +34,6 @@ class QuestionActivity : AppCompatActivity() {
         loadNewQuestion()
 
         binding.buttonSubmit.setOnClickListener {
-
-
             val selectedID = binding.radioGrp.checkedRadioButtonId
             val selectedIndex = when (selectedID) {
                 binding.radio1.id -> 0
@@ -45,12 +45,19 @@ class QuestionActivity : AppCompatActivity() {
 
             if (selectedIndex == currentQuestion.correctAnswerIndex) {
                 Toast.makeText(this,"Correct Answer!",Toast.LENGTH_SHORT).show()
+                correctAnswers++
             }else {
                 Toast.makeText(this,"Wrong answer",Toast.LENGTH_SHORT).show()
                   }
+
             questionsAnswered++
             loadNewQuestion()
-            if questionsAnswered = 5
+            if (questionsAnswered == 5) {
+                val newIntent = Intent(this,resultActivity::class.java)
+               newIntent.putExtra("CORRECT_ANSWERS",correctAnswers)
+                newIntent.putExtra("QUESTIONS_ANSWERED",questionsAnswered)
+                startActivity(newIntent)
+                }
             }
         }
     private fun getQuestion() : Question {
@@ -58,15 +65,12 @@ class QuestionActivity : AppCompatActivity() {
         currentQuestion = question.generalKnowledgeQuestions[randomIndex]
        return currentQuestion
     }
-
     private fun setQuestion(question: Question) {
         binding.tvQuestion.text = question.questionText
         binding.radio1.text = question.options[0]
         binding.radio2.text = question.options[1]
         binding.radio3.text = question.options[2]
         binding.radio4.text = question.options[3]
-
-
         binding.radioGrp.clearCheck()
     }
 
